@@ -28,6 +28,8 @@ public class App {
 			public void actionPerformed(ActionEvent e) {
 				repoPath = repoInputBox.getText();
 				gitSubprocessClient = new GitSubprocessClient(repoPath);
+
+				updateGitStatus();
 			}
 		});
 
@@ -46,6 +48,10 @@ public class App {
 
 	public static void main(String[] args) {
 		new App();
+	}
+
+	public void updateGitStatus() {
+		// implement behavior
 	}
 
 }
