@@ -46,12 +46,16 @@ public class App {
 		JPanel centerPanel = new JPanel(new GridLayout(1, 3));
 
 		// setting up status panel of center
-		JPanel statusPanel = new JPanel(new GridLayout(2, 1));
+		JPanel statusPanel = new JPanel(new BorderLayout());
 
+		JPanel refreshPanel = new JPanel();
 		JButton refreshButton = new JButton("Refresh Status");
+		refreshPanel.add(refreshButton);
+
+		JPanel statusTextPanel = new JPanel();
 		statusField = new JTextField(30);
 		statusField.setEditable(false);
-		updateGitStatus();
+		statusTextPanel.add(statusField);
 
 		// adding listener to update status text box
 		refreshButton.addActionListener(new ActionListener() {
@@ -61,8 +65,8 @@ public class App {
 			}
 		});
 
-		statusPanel.add(refreshButton);
-		statusPanel.add(statusField);
+		statusPanel.add(refreshPanel, BorderLayout.NORTH);
+		statusPanel.add(statusTextPanel, BorderLayout.CENTER);
 
 		centerPanel.add(statusPanel);
 		// end status panel setup
