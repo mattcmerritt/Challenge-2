@@ -94,7 +94,7 @@ public class App {
 	}
 
 	public void updateGitStatus() {
-		// implement behavior
+		statusText.setText(gitSubprocessClient.gitStatus());
 	}
 
 }
