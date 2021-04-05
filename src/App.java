@@ -10,7 +10,7 @@ public class App {
 	private String repoPath;
 	private GitSubprocessClient gitSubprocessClient;
 
-	private JTextField statusField;
+	private JTextArea statusText;
 
 	public App() {
 		JFrame mainWindow = new JFrame("Git Helper");
@@ -53,9 +53,9 @@ public class App {
 		refreshPanel.add(refreshButton);
 
 		JPanel statusTextPanel = new JPanel();
-		statusField = new JTextField(30);
-		statusField.setEditable(false);
-		statusTextPanel.add(statusField);
+		statusText = new JTextArea(20, 30);
+		statusText.setEditable(false);
+		statusTextPanel.add(statusText);
 
 		// adding listener to update status text box
 		refreshButton.addActionListener(new ActionListener() {
