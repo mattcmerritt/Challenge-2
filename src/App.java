@@ -12,6 +12,7 @@ public class App {
 
 	private JTextArea statusText;
 	private JLabel loadFailLabel;
+	private JScrollPane statusPane;
 
 	public App() {
 		JFrame mainWindow = new JFrame("Git Helper");
@@ -69,8 +70,8 @@ public class App {
 		statusText = new JTextArea(20, 25);
 		statusText.setEditable(false);
 		statusText.setMargin(new Insets(10, 10, 10, 10));
-		statusText.setLineWrap(true);
-		statusTextPanel.add(statusText);
+		statusPane = new JScrollPane(statusText);
+		statusTextPanel.add(statusPane);
 
 		// adding listener to update status text box
 		refreshButton.addActionListener(new ActionListener() {
@@ -119,6 +120,8 @@ public class App {
 				showLoadFail();
 			}
 		}
+
+		statusText.setText(statusText.getText() + "\n"); // moves the status pane to show the left of the panel, not right
 	}
 
 	public void showLoadFail() {
