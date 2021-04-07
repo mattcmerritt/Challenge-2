@@ -11,6 +11,7 @@ public class App {
 	private GitSubprocessClient gitSubprocessClient;
 
 	private JTextArea statusText;
+	private JLabel loadFailLabel;
 
 	public App() {
 		JFrame mainWindow = new JFrame("Git Helper");
@@ -23,13 +24,22 @@ public class App {
 		JLabel selectRepoLabel = new JLabel("Filepath for repo:");
 		JTextField repoInputBox = new JTextField(50);
 		JButton submitRepoButton = new JButton("Open Repo");
+		loadFailLabel = new JLabel("Failed to open repo");
+
+		loadFailLabel.setForeground(Color.red);
 
 		// adding button listener
 		submitRepoButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				repoPath = repoInputBox.getText();
-				gitSubprocessClient = new GitSubprocessClient(repoPath);
+				try {
+					gitSubprocessClient = new GitSubprocessClient(repoPath);
+					gitSubprocessClient.gitStatus(); // unused command to test if the loaded directory can be used
+					hideLoadFail();
+				} catch (RuntimeException exception) {
+					showLoadFail();
+				}
 
 				updateGitStatus();
 			}
@@ -38,6 +48,9 @@ public class App {
 		repoSelectPanel.add(selectRepoLabel);
 		repoSelectPanel.add(repoInputBox);
 		repoSelectPanel.add(submitRepoButton);
+		repoSelectPanel.add(loadFailLabel);
+
+		hideLoadFail();
 
 		mainPanel.add(repoSelectPanel, BorderLayout.NORTH);
 		// end repo selection panel setup
@@ -53,8 +66,10 @@ public class App {
 		refreshPanel.add(refreshButton);
 
 		JPanel statusTextPanel = new JPanel();
-		statusText = new JTextArea(20, 30);
+		statusText = new JTextArea(20, 25);
 		statusText.setEditable(false);
+		statusText.setMargin(new Insets(10, 10, 10, 10));
+		statusText.setLineWrap(true);
 		statusTextPanel.add(statusText);
 
 		// adding listener to update status text box
@@ -94,7 +109,27 @@ public class App {
 	}
 
 	public void updateGitStatus() {
-		statusText.setText(gitSubprocessClient.gitStatus());
+		if (gitSubprocessClient == null) {
+			showLoadFail();
+		}
+		else {
+			statusText.setText(gitSubprocessClient.gitStatus());
+
+			if (statusText.getText().indexOf("fatal") == 0) {
+				showLoadFail();
+			}
+		}
+	}
+
+	public void showLoadFail() {
+		loadFailLabel.setText("Failed to open repo");
+		gitSubprocessClient = null; // clear out a bad directory so that it cannot be used
+		statusText.setText("fatal: not a git repository (or any of the parent directories): .git");
+		loadFailLabel.setVisible(true);
+	}
+
+	public void hideLoadFail() {
+		loadFailLabel.setText("");
 	}
 
 }
