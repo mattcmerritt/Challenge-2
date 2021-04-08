@@ -14,6 +14,8 @@ public class App {
 	private JLabel loadFailLabel;
 	private JScrollPane statusPane;
 
+	private String[] changedFiles;
+
 	public App() {
 		JFrame mainWindow = new JFrame("Git Helper");
 
@@ -90,11 +92,75 @@ public class App {
 		// placeholder panels for center panel
 		JPanel panel1 = new JPanel();
 		panel1.setBackground(Color.blue);
-		JPanel panel2 = new JPanel();
-		panel2.setBackground(Color.red);
 
 		centerPanel.add(panel1);
-		centerPanel.add(panel2);
+
+		// setting up individual file actions panel to center
+		JPanel individualFilePanel = new JPanel();
+		individualFilePanel.setLayout(new BoxLayout(individualFilePanel, BoxLayout.Y_AXIS));
+
+		JLabel individualFileLabel = new JLabel("Individual File Actions:");
+		JLabel selectFileLabel = new JLabel("Select File:");
+
+		changedFiles = new String[] {"file.txt", "test.txt", "test2.txt"};
+
+		JComboBox fileDropdown = new JComboBox(changedFiles);
+		JButton addFileButton = new JButton("Add single file");
+		JButton restoreFileButton = new JButton("Restore single file");
+		JButton unstageFileButton = new JButton("Unstage single file");
+
+		individualFileLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		selectFileLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		fileDropdown.setAlignmentX(Component.CENTER_ALIGNMENT);
+		addFileButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+		restoreFileButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+		unstageFileButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+
+		fileDropdown.setMaximumSize(new Dimension(300, 25));
+		addFileButton.setMaximumSize(new Dimension(200, 25));
+		restoreFileButton.setMaximumSize(new Dimension(200, 25));
+		unstageFileButton.setMaximumSize(new Dimension(200, 25));
+
+		addFileButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String selectedFile = fileDropdown.getSelectedItem().toString();
+				addIndividualFile(selectedFile);
+				updateGitStatus();
+			}
+		});
+
+		restoreFileButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String selectedFile = fileDropdown.getSelectedItem().toString();
+				restoreIndividualFile(selectedFile);
+				updateGitStatus();
+			}
+		});
+
+		unstageFileButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				String selectedFile = fileDropdown.getSelectedItem().toString();
+				unstageIndividualFile(selectedFile);
+				updateGitStatus();
+			}
+		});
+
+		individualFilePanel.add(individualFileLabel);
+		individualFilePanel.add(Box.createRigidArea(new Dimension(0, 25))); // spacing
+		individualFilePanel.add(selectFileLabel);
+		individualFilePanel.add(fileDropdown);
+		individualFilePanel.add(Box.createRigidArea(new Dimension(0, 12))); // spacing
+		individualFilePanel.add(addFileButton);
+		individualFilePanel.add(Box.createRigidArea(new Dimension(0, 12))); // spacing
+		individualFilePanel.add(restoreFileButton);
+		individualFilePanel.add(Box.createRigidArea(new Dimension(0, 12))); // spacing
+		individualFilePanel.add(unstageFileButton);
+
+		centerPanel.add(individualFilePanel);
+		// end individual file actions panel
 
 		mainPanel.add(centerPanel, BorderLayout.CENTER);
 		// end center panel setup
@@ -122,6 +188,33 @@ public class App {
 		}
 
 		statusText.setText(statusText.getText() + "\n"); // moves the status pane to show the left of the panel, not right
+	}
+
+	public void addIndividualFile(String filename) {
+		if (gitSubprocessClient == null) {
+			showLoadFail();
+		}
+		else {
+			System.out.println(gitSubprocessClient.gitAddFile(filename));
+		}
+	}
+
+	public void restoreIndividualFile(String filename) {
+		if (gitSubprocessClient == null) {
+			showLoadFail();
+		}
+		else {
+			System.out.println(gitSubprocessClient.runGitCommand("restore " + filename));
+		}
+	}
+
+	public void unstageIndividualFile(String filename) {
+		if (gitSubprocessClient == null) {
+			showLoadFail();
+		}
+		else {
+			System.out.println(gitSubprocessClient.runGitCommand("restore --staged " + filename));
+		}
 	}
 
 	public void showLoadFail() {
