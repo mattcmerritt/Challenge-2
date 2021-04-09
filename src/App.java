@@ -2,6 +2,7 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
 
 import git.tools.client.GitSubprocessClient;
 
@@ -10,18 +11,17 @@ public class App {
 	private String repoPath;
 	private String commitMessage;
 	private String branchName = "master";
-	private Color _buttonBackgroundColor = Color.white;
-	private Color _panelBackgroundColor = Color.lightGray;
-	private Color _currentForegroundColor = Color.black;
 	private GitSubprocessClient gitSubprocessClient;
-
+	private ArrayList<JComponent> items;
+	private boolean dark;
 	private JTextArea statusText;
 	private JLabel loadFailLabel;
 	private JScrollPane statusPane;
 
 	public App() {
+		items = new ArrayList<JComponent>();
+		dark = true; // will be toggled back to false at end of startup
 		JFrame mainWindow = new JFrame("Git Helper");
-
 		JPanel mainPanel = new JPanel(new BorderLayout());
 		//mainPanel.setBackground(_panelBackgroundColor);
 
@@ -29,11 +29,16 @@ public class App {
 		JPanel repoSelectPanel = new JPanel();
 		JLabel selectRepoLabel = new JLabel("Filepath for repo:");
 		JTextField repoInputBox = new JTextField(50);
+		repoInputBox.setBorder(BorderFactory.createLineBorder(Color.black));
 		JButton submitRepoButton = new JButton("Open Repo");
 		loadFailLabel = new JLabel("Failed to open repo");
 
 		loadFailLabel.setForeground(Color.red);
 		JButton _selectThemeButton = new JButton("Dark Mode");
+		items.add(submitRepoButton);
+		items.add(repoSelectPanel);
+		items.add(selectRepoLabel);
+
 		// adding button listener
 		submitRepoButton.addActionListener(new ActionListener() {
 			@Override
@@ -50,28 +55,34 @@ public class App {
 				updateGitStatus();
 			}
 		});
-		//Action Listener for the pull button
+		//Action Listener for the change theme button
 		_selectThemeButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				if (_buttonBackgroundColor == Color.white) {
-					_buttonBackgroundColor = Color.black;
-					_panelBackgroundColor = Color.darkGray;
-					_currentForegroundColor = Color.red;
-					_selectThemeButton.setText("Light Mode");
-					_selectThemeButton.setBackground(_buttonBackgroundColor);
-					_selectThemeButton.setForeground(_currentForegroundColor);
-					repoSelectPanel.repaint();
+				dark = !dark;
+				if (dark) {
+					for (JComponent item : items) {
+						if (item instanceof JPanel) {
+							item.setBackground(Color.black);
+							_selectThemeButton.setText("Light Mode");
+						} else {
+							_selectThemeButton.setText("Light Mode");
+							item.setBackground(Color.black);
+							item.setForeground(Color.white);
+						}
+					}
+				} else {
+					for (JComponent item : items) {
+						if (item instanceof JPanel) {
+							item.setBackground(Color.white);
+							_selectThemeButton.setText("Dark Mode");
+						} else {
+							_selectThemeButton.setText("Dark Mode");
+							item.setBackground(Color.white);
+							item.setForeground(Color.black);
+						}
+					}
 				}
-				else {
-					_buttonBackgroundColor = Color.white;
-					_panelBackgroundColor = Color.lightGray;
-					_currentForegroundColor = Color.black;
-					_selectThemeButton.setText("Dark Mode");
-					_selectThemeButton.setBackground(_buttonBackgroundColor);
-					_selectThemeButton.setForeground(_currentForegroundColor);
-					repoSelectPanel.repaint();
-				} 
 
 			}
 		});
@@ -81,6 +92,7 @@ public class App {
 		repoSelectPanel.add(submitRepoButton);
 		repoSelectPanel.add(loadFailLabel);
 		repoSelectPanel.add(_selectThemeButton);
+		items.add(_selectThemeButton);
 
 		hideLoadFail();
 
@@ -93,7 +105,7 @@ public class App {
 
 		// setting up status panel of center
 		JPanel statusPanel = new JPanel(new BorderLayout());
-	
+
 
 		JPanel refreshPanel = new JPanel();
 		JButton refreshButton = new JButton("Refresh Status");
@@ -103,15 +115,25 @@ public class App {
 		statusText = new JTextArea(20, 25);
 		statusText.setEditable(false);
 		statusText.setMargin(new Insets(10, 10, 10, 10));
+		statusText.setBorder(BorderFactory.createLineBorder(Color.black));
 		statusPane = new JScrollPane(statusText);
 		JLabel commitInputLabel = new JLabel("Commit Message:");
 		JTextArea commitInputBox = new JTextArea(15, 27);
+		commitInputBox.setBorder(BorderFactory.createLineBorder(Color.black));
+		JTextArea commitOutputBox = new JTextArea(15, 27);
+		commitOutputBox.setBorder(BorderFactory.createLineBorder(Color.black));
+		commitOutputBox.setEditable(false);
 		commitInputBox.setEditable(true);
-		statusText.setMargin(new Insets(10, 10, 10, 10));
 		statusTextPanel.add(statusPane);
 		statusTextPanel.add(commitInputLabel);
 		statusTextPanel.add(commitInputBox);
-
+		statusTextPanel.add(commitOutputBox);
+		items.add(refreshButton);
+		items.add(refreshPanel);
+		items.add(centerPanel);
+		items.add(statusPanel);
+		items.add(statusTextPanel);
+		items.add(commitInputLabel);
 		// adding listener to update status text box
 		refreshButton.addActionListener(new ActionListener() {
 			@Override
@@ -137,52 +159,56 @@ public class App {
 
 		mainPanel.add(centerPanel, BorderLayout.CENTER);
 		// end center panel setup
-		
+
 		//South Panel
 		JPanel _buttonPanel = new JPanel();
 		_buttonPanel.setPreferredSize(new Dimension(200, 30));
-		_buttonPanel.setBackground(java.awt.Color.gray);
+		_buttonPanel.setBackground(java.awt.Color.white);
 		// Creating buttons
-			JButton _commitButton = new JButton("Commit");
-			JButton _pushButton = new JButton("Push");
-			JButton _pullButton = new JButton("Pull");
+		JButton _commitButton = new JButton("Commit");
+		JButton _pushButton = new JButton("Push");
+		JButton _pullButton = new JButton("Pull");
 		// Adds the buttons to the panel
-			_buttonPanel.add(_commitButton);
-			_buttonPanel.add(_pushButton);
-			_buttonPanel.add(_pullButton);
+		_buttonPanel.add(_commitButton);
+		_buttonPanel.add(_pushButton);
+		_buttonPanel.add(_pullButton);
+		items.add(_commitButton);
+		items.add(_pushButton);
+		items.add(_pullButton);
+		items.add(_buttonPanel);
 		//Action Listener for the commit button
-			_commitButton.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					if (gitSubprocessClient == null) {
-					    showLoadFail();
-					}
-					else {
-						commitMessage = commitInputBox.getText();
-						gitSubprocessClient.gitCommit(commitMessage);
-						statusText.setText("Successfully committed: " + commitMessage);
-						updateGitStatus();
-					}
-
+		_commitButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (gitSubprocessClient == null) {
+					showLoadFail();
 				}
-			});
-			//Action Listener for the push button
-			_pushButton.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					if (gitSubprocessClient == null) {
-					    showLoadFail();
-					}
-					else {
-						gitSubprocessClient.gitPush(branchName);
-						statusText.setText("Successfully pushed to " + branchName);
-						updateGitStatus();
-					}
-
+				else {
+					commitMessage = commitInputBox.getText();
+					gitSubprocessClient.gitCommit(commitMessage);
+					commitOutputBox.setText("Successfully committed: " + commitMessage);
+					updateGitStatus();
 				}
-			});
-			//Action Listener for the pull button
-			_pullButton.addActionListener(new ActionListener() {
+
+			}
+		});
+		//Action Listener for the push button
+		_pushButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (gitSubprocessClient == null) {
+					showLoadFail();
+				}
+				else {
+					gitSubprocessClient.gitPush(branchName);
+					commitOutputBox.setText("Successfully pushed to " + branchName);
+					updateGitStatus();
+				}
+
+			}
+		});
+		//Action Listener for the pull button
+		/*	_pullButton.addActionListener(new ActionListener() {
 				@Override
 				public void actionPerformed(ActionEvent e) {
 					if (gitSubprocessClient == null) {
@@ -195,10 +221,9 @@ public class App {
 					}
 
 				}
-			});
+			}); */
 		// Adds the JPanels to the JFrame
 		mainPanel.add(_buttonPanel, BorderLayout.SOUTH);
-
 		mainWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		mainWindow.setSize(1000, 1000);
 		mainWindow.add(mainPanel);
