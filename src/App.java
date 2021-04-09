@@ -2,6 +2,8 @@ import javax.swing.*;
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.util.ArrayList;
+import java.util.StringTokenizer;
 
 import git.tools.client.GitSubprocessClient;
 
@@ -13,6 +15,7 @@ public class App {
 	private JTextArea statusText;
 	private JLabel loadFailLabel;
 	private JScrollPane statusPane;
+	private JComboBox<String> fileDropdown;
 
 	private String[] changedFiles;
 
@@ -102,9 +105,9 @@ public class App {
 		JLabel individualFileLabel = new JLabel("Individual File Actions:");
 		JLabel selectFileLabel = new JLabel("Select File:");
 
-		changedFiles = new String[] {"file.txt", "test.txt", "test2.txt"};
+		changedFiles = new String[0];
 
-		JComboBox fileDropdown = new JComboBox(changedFiles);
+		fileDropdown = new JComboBox(changedFiles);
 		JButton addFileButton = new JButton("Add single file");
 		JButton restoreFileButton = new JButton("Restore single file");
 		JButton unstageFileButton = new JButton("Unstage single file");
@@ -182,6 +185,29 @@ public class App {
 		else {
 			statusText.setText(gitSubprocessClient.gitStatus());
 
+			// saving the previously selected item, if an item was selected
+			String prevSelected = fileDropdown.getSelectedItem() == null ? null : fileDropdown.getSelectedItem().toString();
+
+			// fetching list of changed files
+			Object[] fileObjects = listFilesInStatus();
+			changedFiles = new String[fileObjects.length];
+
+			// casting files to be useful
+			for (int i = 0; i < fileObjects.length; i++) {
+				changedFiles[i] = (String) fileObjects[i];
+			}
+
+			// clears out dropdown and adds in new list of files
+			fileDropdown.removeAllItems();
+			for (String filename : changedFiles) {
+				fileDropdown.addItem(filename);
+			}
+
+			// re-selecting the previously selected item if possible
+			if (prevSelected != null) {
+				fileDropdown.setSelectedItem(prevSelected);
+			}
+
 			if (statusText.getText().indexOf("fatal") == 0) {
 				showLoadFail();
 			}
@@ -226,6 +252,29 @@ public class App {
 
 	public void hideLoadFail() {
 		loadFailLabel.setText("");
+	}
+
+	public Object[] listFilesInStatus() {
+		if (gitSubprocessClient == null) {
+			showLoadFail();
+			return new String[0];
+		}
+		else {
+			ArrayList<String> files = new ArrayList<String>();
+			StringTokenizer changed = new StringTokenizer(gitSubprocessClient.runGitCommand("ls-files -m"));
+			while (changed.hasMoreElements()) {
+				files.add(changed.nextToken());
+			}
+			StringTokenizer untracked = new StringTokenizer(gitSubprocessClient.runGitCommand("ls-files --others --exclude-standard"));
+			while (untracked.hasMoreElements()) {
+				files.add(untracked.nextToken());
+			}
+			StringTokenizer staged = new StringTokenizer(gitSubprocessClient.runGitCommand("diff --name-only --cached"));
+			while (staged.hasMoreElements()) {
+				files.add(staged.nextToken());
+			}
+			return files.toArray();
+		}
 	}
 
 }
