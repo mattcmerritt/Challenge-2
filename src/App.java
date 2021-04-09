@@ -127,32 +127,41 @@ public class App {
 		addFileButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				String selectedFile = fileDropdown.getSelectedItem().toString();
-				addIndividualFile(selectedFile);
-				updateGitStatus();
+				Object selectedOption = fileDropdown.getSelectedItem();
+				if (selectedOption != null) {
+					String selectedFile = selectedOption.toString();
+					addIndividualFile(selectedFile);
+					updateGitStatus();
+				}
 			}
 		});
 
 		restoreFileButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				String selectedFile = fileDropdown.getSelectedItem().toString();
-				restoreIndividualFile(selectedFile);
-				updateGitStatus();
+				Object selectedOption = fileDropdown.getSelectedItem();
+				if (selectedOption != null) {
+					String selectedFile = selectedOption.toString();
+					restoreIndividualFile(selectedFile);
+					updateGitStatus();
+				}
 			}
 		});
 
 		unstageFileButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				String selectedFile = fileDropdown.getSelectedItem().toString();
-				unstageIndividualFile(selectedFile);
-				updateGitStatus();
+				Object selectedOption = fileDropdown.getSelectedItem();
+				if (selectedOption != null) {
+					String selectedFile = selectedOption.toString();
+					unstageIndividualFile(selectedFile);
+					updateGitStatus();
+				}
 			}
 		});
 
 		individualFilePanel.add(individualFileLabel);
-		individualFilePanel.add(Box.createRigidArea(new Dimension(0, 25))); // spacing
+		individualFilePanel.add(Box.createRigidArea(new Dimension(0, 12))); // spacing
 		individualFilePanel.add(selectFileLabel);
 		individualFilePanel.add(fileDropdown);
 		individualFilePanel.add(Box.createRigidArea(new Dimension(0, 12))); // spacing
