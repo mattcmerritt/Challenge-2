@@ -1,4 +1,6 @@
 import javax.swing.*;
+import javax.swing.text.JTextComponent;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -59,31 +61,13 @@ public class App {
 		_selectThemeButton.addActionListener(new ActionListener() {
 			@Override
 			public void actionPerformed(ActionEvent e) {
-				dark = !dark;
-				if (dark) {
-					for (JComponent item : items) {
-						if (item instanceof JPanel) {
-							item.setBackground(Color.black);
-							_selectThemeButton.setText("Light Mode");
-						} else {
-							_selectThemeButton.setText("Light Mode");
-							item.setBackground(Color.black);
-							item.setForeground(Color.white);
+					changeColor();
+					if (dark) {
+						_selectThemeButton.setText("Light Mode");
+					} else {
+						_selectThemeButton.setText("Light Mode");
 						}
-					}
-				} else {
-					for (JComponent item : items) {
-						if (item instanceof JPanel) {
-							item.setBackground(Color.white);
-							_selectThemeButton.setText("Dark Mode");
-						} else {
-							_selectThemeButton.setText("Dark Mode");
-							item.setBackground(Color.white);
-							item.setForeground(Color.black);
-						}
-					}
-				}
-
+				
 			}
 		});
 
@@ -93,6 +77,8 @@ public class App {
 		repoSelectPanel.add(loadFailLabel);
 		repoSelectPanel.add(_selectThemeButton);
 		items.add(_selectThemeButton);
+		items.add(repoInputBox);
+		
 
 		hideLoadFail();
 
@@ -118,8 +104,9 @@ public class App {
 		statusText.setBorder(BorderFactory.createLineBorder(Color.black));
 		statusPane = new JScrollPane(statusText);
 		JLabel commitInputLabel = new JLabel("Commit Message:");
-		JTextArea commitInputBox = new JTextArea(15, 27);
+		JTextArea commitInputBox = new JTextArea(1, 27);
 		commitInputBox.setBorder(BorderFactory.createLineBorder(Color.black));
+		JLabel commitLogLabel = new JLabel("Commit Message:");
 		JTextArea commitOutputBox = new JTextArea(15, 27);
 		commitOutputBox.setBorder(BorderFactory.createLineBorder(Color.black));
 		commitOutputBox.setEditable(false);
@@ -127,6 +114,7 @@ public class App {
 		statusTextPanel.add(statusPane);
 		statusTextPanel.add(commitInputLabel);
 		statusTextPanel.add(commitInputBox);
+		statusTextPanel.add(commitLogLabel);
 		statusTextPanel.add(commitOutputBox);
 		items.add(refreshButton);
 		items.add(refreshPanel);
@@ -134,6 +122,10 @@ public class App {
 		items.add(statusPanel);
 		items.add(statusTextPanel);
 		items.add(commitInputLabel);
+		items.add(commitLogLabel);
+		items.add(commitOutputBox);
+		items.add(commitInputBox);
+		items.add(statusText);
 		// adding listener to update status text box
 		refreshButton.addActionListener(new ActionListener() {
 			@Override
@@ -185,8 +177,7 @@ public class App {
 				}
 				else {
 					commitMessage = commitInputBox.getText();
-					gitSubprocessClient.gitCommit(commitMessage);
-					commitOutputBox.setText("Successfully committed: " + commitMessage);
+					commitOutputBox.setText(gitSubprocessClient.gitCommit(commitMessage));
 					updateGitStatus();
 				}
 
@@ -200,8 +191,7 @@ public class App {
 					showLoadFail();
 				}
 				else {
-					gitSubprocessClient.gitPush(branchName);
-					commitOutputBox.setText("Successfully pushed to " + branchName);
+					commitOutputBox.setText(gitSubprocessClient.gitPush(branchName));
 					updateGitStatus();
 				}
 
@@ -228,6 +218,8 @@ public class App {
 		mainWindow.setSize(1000, 1000);
 		mainWindow.add(mainPanel);
 		mainWindow.setVisible(true);
+		changeColor();
+		
 	}
 
 	public static void main(String[] args) {
@@ -258,6 +250,39 @@ public class App {
 
 	public void hideLoadFail() {
 		loadFailLabel.setText("");
+	}
+	
+	public void changeColor() {
+		dark = !dark;
+		if (dark) {
+			for (JComponent item : items) {
+				if (item instanceof JPanel) {
+					item.setBackground(Color.black);
+				} 
+				else if (item instanceof JTextComponent) {
+                    item.setBackground(Color.darkGray);
+                    item.setForeground(Color.white);
+                }
+				else {
+					item.setBackground(Color.black);
+					item.setForeground(Color.white);
+				}
+			}
+		} else {
+			for (JComponent item : items) {
+				if (item instanceof JPanel) {
+					item.setBackground(Color.white);
+				} 
+				else if (item instanceof JTextComponent) {
+                    item.setBackground(Color.white);
+                    item.setForeground(Color.black);
+                }
+				else {
+					item.setBackground(Color.white);
+					item.setForeground(Color.black);
+				}
+			}
+		}
 	}
 
 }
