@@ -17,11 +17,10 @@ public class App {
 	private GitSubprocessClient gitSubprocessClient;
 	private ArrayList<JComponent> items;
 	private boolean dark;
-	private JTextArea statusText;
+	private JTextArea statusText, outputText;
 	private JLabel loadFailLabel;
-	private JScrollPane statusPane;
+	private JScrollPane statusPane, outputPane;
 	private JComboBox<String> fileDropdown;
-	private JTextArea commitOutputBox;
 
 	private String[] changedFiles;
 
@@ -68,10 +67,10 @@ public class App {
 			public void actionPerformed(ActionEvent e) {
 					changeColor();
 					if (dark) {
-						_selectThemeButton.setText("Light Mode");
+						_selectThemeButton.setText("Dark Mode");
 					} else {
 						_selectThemeButton.setText("Light Mode");
-						}
+					}
 				
 			}
 		});
@@ -108,27 +107,35 @@ public class App {
 		statusText.setMargin(new Insets(10, 10, 10, 10));
 		statusText.setBorder(BorderFactory.createLineBorder(Color.black));
 		statusPane = new JScrollPane(statusText);
+
 		JLabel commitInputLabel = new JLabel("Commit Message:");
-		JTextArea commitInputBox = new JTextArea(1, 27);
+		JTextArea commitInputBox = new JTextArea(1, 25);
+		commitInputBox.setMargin(new Insets(10, 10, 10, 10));
 		commitInputBox.setBorder(BorderFactory.createLineBorder(Color.black));
-		JLabel commitLogLabel = new JLabel("Commit Log:");
-		commitOutputBox = new JTextArea(15, 27);
-		commitOutputBox.setBorder(BorderFactory.createLineBorder(Color.black));
-		commitOutputBox.setEditable(false);
+		JLabel logLabel = new JLabel("Output Log:");
+
+		outputText = new JTextArea(15, 25);
+		outputText.setBorder(BorderFactory.createLineBorder(Color.black));
+		outputText.setMargin(new Insets(10, 10, 10, 10));
+		outputText.setEditable(false);
+
+		outputPane = new JScrollPane(outputText);
+
 		commitInputBox.setEditable(true);
 		statusTextPanel.add(statusPane);
 		statusTextPanel.add(commitInputLabel);
 		statusTextPanel.add(commitInputBox);
-		statusTextPanel.add(commitLogLabel);
-		statusTextPanel.add(commitOutputBox);
+		statusTextPanel.add(logLabel);
+		statusTextPanel.add(outputPane);
+
 		items.add(refreshButton);
 		items.add(refreshPanel);
 		items.add(centerPanel);
 		items.add(statusPanel);
 		items.add(statusTextPanel);
 		items.add(commitInputLabel);
-		items.add(commitLogLabel);
-		items.add(commitOutputBox);
+		items.add(logLabel);
+		items.add(outputText);
 		items.add(commitInputBox);
 		items.add(statusText);
 		// adding listener to update status text box
@@ -173,9 +180,9 @@ public class App {
 		unstageFileButton.setAlignmentX(Component.CENTER_ALIGNMENT);
 
 		fileDropdown.setMaximumSize(new Dimension(300, 25));
-		addFileButton.setMaximumSize(new Dimension(200, 25));
-		restoreFileButton.setMaximumSize(new Dimension(200, 25));
-		unstageFileButton.setMaximumSize(new Dimension(200, 25));
+		addFileButton.setMaximumSize(new Dimension(150, 25));
+		restoreFileButton.setMaximumSize(new Dimension(150, 25));
+		unstageFileButton.setMaximumSize(new Dimension(150, 25));
 
 		addFileButton.addActionListener(new ActionListener() {
 			@Override
@@ -240,7 +247,7 @@ public class App {
 
 		//South Panel
 		JPanel _buttonPanel = new JPanel();
-		_buttonPanel.setPreferredSize(new Dimension(200, 30));
+		//_buttonPanel.setPreferredSize(new Dimension(200, 30)); // panel autosizes to fit screen
 		_buttonPanel.setBackground(java.awt.Color.white);
 		// Creating buttons
 		JButton _commitButton = new JButton("Commit");
@@ -263,7 +270,7 @@ public class App {
 				}
 				else {
 					commitMessage = commitInputBox.getText();
-					commitOutputBox.setText(gitSubprocessClient.gitCommit(commitMessage));
+					outputText.setText(gitSubprocessClient.gitCommit(commitMessage));
 					updateGitStatus();
 				}
 
@@ -277,31 +284,31 @@ public class App {
 					showLoadFail();
 				}
 				else {
-					commitOutputBox.setText(gitSubprocessClient.gitPush(branchName));
+					outputText.setText(gitSubprocessClient.gitPush(branchName));
 					updateGitStatus();
 				}
 
 			}
 		});
 		//Action Listener for the pull button
-		/*	_pullButton.addActionListener(new ActionListener() {
-				@Override
-				public void actionPerformed(ActionEvent e) {
-					if (gitSubprocessClient == null) {
-					    showLoadFail();
-					}
-					else {
-						gitSubprocessClient.gitPull(branchName);
-						statusText.setText("Successfully pulled to " + branchName);
-						updateGitStatus();
-					}
-
+		_pullButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				if (gitSubprocessClient == null) {
+					showLoadFail();
 				}
-			}); */
+				else {
+					gitSubprocessClient.gitPull(branchName);
+					statusText.setText("Successfully pulled to " + branchName);
+					updateGitStatus();
+				}
+
+			}
+		});
 		// Adds the JPanels to the JFrame
 		mainPanel.add(_buttonPanel, BorderLayout.SOUTH);
 		mainWindow.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
-		mainWindow.setSize(1000, 1000);
+		mainWindow.setSize(1000, 850);
 		mainWindow.add(mainPanel);
 		mainWindow.setVisible(true);
 		changeColor();
@@ -355,7 +362,7 @@ public class App {
 			showLoadFail();
 		}
 		else {
-			commitOutputBox.setText(gitSubprocessClient.gitAddFile(filename));
+			outputText.setText(gitSubprocessClient.gitAddFile(filename));
 		}
 	}
 
@@ -364,7 +371,7 @@ public class App {
 			showLoadFail();
 		}
 		else {
-			commitOutputBox.setText(gitSubprocessClient.runGitCommand("restore " + filename));
+			outputText.setText(gitSubprocessClient.runGitCommand("restore " + filename));
 		}
 	}
 
@@ -373,7 +380,7 @@ public class App {
 			showLoadFail();
 		}
 		else {
-			commitOutputBox.setText(gitSubprocessClient.runGitCommand("restore --staged " + filename));
+			outputText.setText(gitSubprocessClient.runGitCommand("restore --staged " + filename));
 		}
 	}
 
