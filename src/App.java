@@ -106,7 +106,7 @@ public class App {
 		JLabel commitInputLabel = new JLabel("Commit Message:");
 		JTextArea commitInputBox = new JTextArea(1, 27);
 		commitInputBox.setBorder(BorderFactory.createLineBorder(Color.black));
-		JLabel commitLogLabel = new JLabel("Commit Message:");
+		JLabel commitLogLabel = new JLabel("Commit Log:");
 		JTextArea commitOutputBox = new JTextArea(15, 27);
 		commitOutputBox.setBorder(BorderFactory.createLineBorder(Color.black));
 		commitOutputBox.setEditable(false);
