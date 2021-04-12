@@ -371,11 +371,13 @@ public class App {
 				branchName = gitSubprocessClient.runGitCommand("branch --show-current");
 
 				String unparsedBranches = gitSubprocessClient.runGitCommand("ls-remote --heads");
+				// remove all carriage returns to make string consistent on all operating systems
+				unparsedBranches = unparsedBranches.replaceAll("\\r", "");
 
 				// separating all branches from string, need a structure that can grow
 				ArrayList<String> branchesList = new ArrayList<String>();
 				while (unparsedBranches.indexOf("\n") != 0) {
-					branchesList.add(unparsedBranches.substring(unparsedBranches.indexOf("refs/heads/") + "refs/heads/".length(), unparsedBranches.indexOf("\n") - 1));
+					branchesList.add(unparsedBranches.substring(unparsedBranches.indexOf("refs/heads/") + "refs/heads/".length(), unparsedBranches.indexOf("\n")));
 					unparsedBranches = unparsedBranches.substring(unparsedBranches.indexOf("\n") + 1);
 				}
 
