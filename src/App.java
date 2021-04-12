@@ -13,16 +13,16 @@ public class App {
 
 	private String repoPath;
 	private String commitMessage;
-	private String branchName = "master";
+	private String branchName;
 	private GitSubprocessClient gitSubprocessClient;
 	private ArrayList<JComponent> items;
 	private boolean dark;
-	private JTextArea statusText, outputText;
+	private JTextArea statusText, outputText, commitInputBox;
 	private JLabel loadFailLabel;
 	private JScrollPane statusPane, outputPane;
-	private JComboBox<String> fileDropdown;
+	private JComboBox<String> fileDropdown, branchDropdown;
 
-	private String[] changedFiles;
+	private String[] changedFiles, branches;
 
 	public App() {
 		items = new ArrayList<JComponent>();
@@ -109,7 +109,7 @@ public class App {
 		statusPane = new JScrollPane(statusText);
 
 		JLabel commitInputLabel = new JLabel("Commit Message:");
-		JTextArea commitInputBox = new JTextArea(1, 25);
+		commitInputBox = new JTextArea(1, 25);
 		commitInputBox.setMargin(new Insets(10, 10, 10, 10));
 		commitInputBox.setBorder(BorderFactory.createLineBorder(Color.black));
 		JLabel logLabel = new JLabel("Output Log:");
@@ -253,6 +253,10 @@ public class App {
 		JButton _commitButton = new JButton("Commit");
 		JButton _pushButton = new JButton("Push");
 		JButton _pullButton = new JButton("Pull");
+		// Creating branch selection for pull
+		branches = new String[0];
+		branchDropdown = new JComboBox<String>(branches);
+		branchDropdown.setPreferredSize(new Dimension(100, 25));
 		// Adds the buttons to the panel
 		_buttonPanel.add(_commitButton);
 		_buttonPanel.add(_pushButton);
@@ -261,6 +265,9 @@ public class App {
 		items.add(_pushButton);
 		items.add(_pullButton);
 		items.add(_buttonPanel);
+		// Add dropdown to panel and list of components
+		_buttonPanel.add(branchDropdown);
+		items.add(branchDropdown);
 		//Action Listener for the commit button
 		_commitButton.addActionListener(new ActionListener() {
 			@Override
@@ -298,9 +305,12 @@ public class App {
 					showLoadFail();
 				}
 				else {
-					gitSubprocessClient.gitPull(branchName);
-					statusText.setText("Successfully pulled to " + branchName);
-					updateGitStatus();
+					Object selectedOption = branchDropdown.getSelectedItem();
+					if (selectedOption != null) {
+						String selectedBranch = (String) selectedOption;
+						outputText.setText(gitSubprocessClient.gitPull(selectedBranch));
+						updateGitStatus();
+					}
 				}
 
 			}
@@ -326,6 +336,7 @@ public class App {
 		else {
 			statusText.setText(gitSubprocessClient.gitStatus());
 
+			// file dropdown setup code
 			// saving the previously selected item, if an item was selected
 			String prevSelected = fileDropdown.getSelectedItem() == null ? null : fileDropdown.getSelectedItem().toString();
 
@@ -348,6 +359,34 @@ public class App {
 			if (prevSelected != null) {
 				fileDropdown.setSelectedItem(prevSelected);
 			}
+			// end file dropdown
+
+			// pull button setup code
+			branchName = gitSubprocessClient.runGitCommand("branch --show-current");
+
+			String unparsedBranches = gitSubprocessClient.runGitCommand("ls-remote --heads");
+
+			// separating all branches from string, need a structure that can grow
+			ArrayList<String> branchesList = new ArrayList<String>();
+			while (unparsedBranches.indexOf("\n") != 0) {
+				branchesList.add(unparsedBranches.substring(unparsedBranches.indexOf("refs/heads/") + "refs/heads/".length(), unparsedBranches.indexOf("\n") - 1));
+				unparsedBranches = unparsedBranches.substring(unparsedBranches.indexOf("\n") + 1);
+			}
+
+			// converting arraylist to array
+			branches = new String[branchesList.size()];
+			for (int i = 0; i < branches.length; i++) {
+				branches[i] = branchesList.get(i);
+			}
+
+			// clears out dropdown and adds in new list of branches
+			branchDropdown.removeAllItems();
+			for (String branch : branches) {
+				branchDropdown.addItem(branch);
+			}
+
+			branchDropdown.setSelectedItem(branchName);
+			// end branch dropdown
 
 			if (statusText.getText().indexOf("fatal") == 0) {
 				showLoadFail();
@@ -388,6 +427,9 @@ public class App {
 		loadFailLabel.setText("Failed to open repo");
 		gitSubprocessClient = null; // clear out a bad directory so that it cannot be used
 		statusText.setText("fatal: not a git repository (or any of the parent directories): .git");
+		outputText.setText(""); // clear output
+		commitInputBox.setText(""); // clear message
+		commitMessage = ""; // clear message
 		loadFailLabel.setVisible(true);
 	}
 
