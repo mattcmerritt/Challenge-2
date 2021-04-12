@@ -67,9 +67,9 @@ public class App {
 			public void actionPerformed(ActionEvent e) {
 					changeColor();
 					if (dark) {
-						_selectThemeButton.setText("Dark Mode");
-					} else {
 						_selectThemeButton.setText("Light Mode");
+					} else {
+						_selectThemeButton.setText("Dark Mode");
 					}
 				
 			}
