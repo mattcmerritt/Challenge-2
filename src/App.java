@@ -336,63 +336,65 @@ public class App {
 		else {
 			statusText.setText(gitSubprocessClient.gitStatus());
 
-			// file dropdown setup code
-			// saving the previously selected item, if an item was selected
-			String prevSelected = fileDropdown.getSelectedItem() == null ? null : fileDropdown.getSelectedItem().toString();
-
-			// fetching list of changed files
-			Object[] fileObjects = listFilesInStatus();
-			changedFiles = new String[fileObjects.length];
-
-			// casting files to be useful
-			for (int i = 0; i < fileObjects.length; i++) {
-				changedFiles[i] = (String) fileObjects[i];
-			}
-
-			// clears out dropdown and adds in new list of files
-			fileDropdown.removeAllItems();
-			for (String filename : changedFiles) {
-				fileDropdown.addItem(filename);
-			}
-
-			// re-selecting the previously selected item if possible
-			if (prevSelected != null) {
-				fileDropdown.setSelectedItem(prevSelected);
-			}
-			// end file dropdown
-
-			// pull button setup code
-			branchName = gitSubprocessClient.runGitCommand("branch --show-current");
-
-			String unparsedBranches = gitSubprocessClient.runGitCommand("ls-remote --heads");
-
-			// separating all branches from string, need a structure that can grow
-			ArrayList<String> branchesList = new ArrayList<String>();
-			while (unparsedBranches.indexOf("\n") != 0) {
-				branchesList.add(unparsedBranches.substring(unparsedBranches.indexOf("refs/heads/") + "refs/heads/".length(), unparsedBranches.indexOf("\n") - 1));
-				unparsedBranches = unparsedBranches.substring(unparsedBranches.indexOf("\n") + 1);
-			}
-
-			// converting arraylist to array
-			branches = new String[branchesList.size()];
-			for (int i = 0; i < branches.length; i++) {
-				branches[i] = branchesList.get(i);
-			}
-
-			// clears out dropdown and adds in new list of branches
-			branchDropdown.removeAllItems();
-			for (String branch : branches) {
-				branchDropdown.addItem(branch);
-			}
-
-			branchDropdown.setSelectedItem(branchName);
-			// end branch dropdown
-
 			if (statusText.getText().indexOf("fatal") == 0) {
 				showLoadFail();
 			}
-		}
 
+			// these should only run if the second check passed
+			if (gitSubprocessClient != null) {
+				// file dropdown setup code
+				// saving the previously selected item, if an item was selected
+				String prevSelected = fileDropdown.getSelectedItem() == null ? null : fileDropdown.getSelectedItem().toString();
+
+				// fetching list of changed files
+				Object[] fileObjects = listFilesInStatus();
+				changedFiles = new String[fileObjects.length];
+
+				// casting files to be useful
+				for (int i = 0; i < fileObjects.length; i++) {
+					changedFiles[i] = (String) fileObjects[i];
+				}
+
+				// clears out dropdown and adds in new list of files
+				fileDropdown.removeAllItems();
+				for (String filename : changedFiles) {
+					fileDropdown.addItem(filename);
+				}
+
+				// re-selecting the previously selected item if possible
+				if (prevSelected != null) {
+					fileDropdown.setSelectedItem(prevSelected);
+				}
+				// end file dropdown
+
+				// pull button setup code
+				branchName = gitSubprocessClient.runGitCommand("branch --show-current");
+
+				String unparsedBranches = gitSubprocessClient.runGitCommand("ls-remote --heads");
+
+				// separating all branches from string, need a structure that can grow
+				ArrayList<String> branchesList = new ArrayList<String>();
+				while (unparsedBranches.indexOf("\n") != 0) {
+					branchesList.add(unparsedBranches.substring(unparsedBranches.indexOf("refs/heads/") + "refs/heads/".length(), unparsedBranches.indexOf("\n") - 1));
+					unparsedBranches = unparsedBranches.substring(unparsedBranches.indexOf("\n") + 1);
+				}
+
+				// converting arraylist to array
+				branches = new String[branchesList.size()];
+				for (int i = 0; i < branches.length; i++) {
+					branches[i] = branchesList.get(i);
+				}
+
+				// clears out dropdown and adds in new list of branches
+				branchDropdown.removeAllItems();
+				for (String branch : branches) {
+					branchDropdown.addItem(branch);
+				}
+
+				branchDropdown.setSelectedItem(branchName);
+				// end branch dropdown
+			}
+		}
 		statusText.setText(statusText.getText() + "\n"); // moves the status pane to show the left of the panel, not right
 	}
 
@@ -426,10 +428,15 @@ public class App {
 	public void showLoadFail() {
 		loadFailLabel.setText("Failed to open repo");
 		gitSubprocessClient = null; // clear out a bad directory so that it cannot be used
-		statusText.setText("fatal: not a git repository (or any of the parent directories): .git");
-		outputText.setText(""); // clear output
+		statusText.setText("fatal: not a git repository (or any of the parent directories): .git\n");
+		outputText.setText("fatal: not a git repository (or any of the parent directories): .git");
 		commitInputBox.setText(""); // clear message
 		commitMessage = ""; // clear message
+		// clearing out dropdowns
+		branches = new String[0];
+		changedFiles = new String[0];
+		branchDropdown.removeAllItems();
+		fileDropdown.removeAllItems();
 		loadFailLabel.setVisible(true);
 	}
 
