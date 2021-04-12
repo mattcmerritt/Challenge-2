@@ -21,6 +21,7 @@ public class App {
 	private JLabel loadFailLabel;
 	private JScrollPane statusPane;
 	private JComboBox<String> fileDropdown;
+	private JTextArea commitOutputBox;
 
 	private String[] changedFiles;
 
@@ -111,7 +112,7 @@ public class App {
 		JTextArea commitInputBox = new JTextArea(1, 27);
 		commitInputBox.setBorder(BorderFactory.createLineBorder(Color.black));
 		JLabel commitLogLabel = new JLabel("Commit Log:");
-		JTextArea commitOutputBox = new JTextArea(15, 27);
+		commitOutputBox = new JTextArea(15, 27);
 		commitOutputBox.setBorder(BorderFactory.createLineBorder(Color.black));
 		commitOutputBox.setEditable(false);
 		commitInputBox.setEditable(true);
@@ -159,7 +160,7 @@ public class App {
 
 		changedFiles = new String[0];
 
-		fileDropdown = new JComboBox(changedFiles);
+		fileDropdown = new JComboBox<String>(changedFiles);
 		JButton addFileButton = new JButton("Add single file");
 		JButton restoreFileButton = new JButton("Restore single file");
 		JButton unstageFileButton = new JButton("Unstage single file");
@@ -214,6 +215,7 @@ public class App {
 
 		items.add(individualFileLabel);
 		items.add(selectFileLabel);
+		items.add(fileDropdown);
 		items.add(addFileButton);
 		items.add(restoreFileButton);
 		items.add(unstageFileButton);
@@ -353,7 +355,7 @@ public class App {
 			showLoadFail();
 		}
 		else {
-			System.out.println(gitSubprocessClient.gitAddFile(filename));
+			commitOutputBox.setText(gitSubprocessClient.gitAddFile(filename));
 		}
 	}
 
@@ -362,7 +364,7 @@ public class App {
 			showLoadFail();
 		}
 		else {
-			System.out.println(gitSubprocessClient.runGitCommand("restore " + filename));
+			commitOutputBox.setText(gitSubprocessClient.runGitCommand("restore " + filename));
 		}
 	}
 
@@ -371,7 +373,7 @@ public class App {
 			showLoadFail();
 		}
 		else {
-			System.out.println(gitSubprocessClient.runGitCommand("restore --staged " + filename));
+			commitOutputBox.setText(gitSubprocessClient.runGitCommand("restore --staged " + filename));
 		}
 	}
 
@@ -393,7 +395,7 @@ public class App {
 				if (item instanceof JPanel) {
 					item.setBackground(Color.black);
 				} 
-				else if (item instanceof JTextComponent) {
+				else if (item instanceof JTextComponent || item instanceof JComboBox) {
                     item.setBackground(Color.darkGray);
                     item.setForeground(Color.white);
                 }
