@@ -460,7 +460,7 @@ public class App {
 				// end file dropdown
 
 				// pull button setup code
-				branchName = gitSubprocessClient.runGitCommand("branch --show-current");
+				branchName = gitSubprocessClient.runGitCommand("name-rev --name-only HEAD");
 
 				String unparsedBranches = gitSubprocessClient.runGitCommand("ls-remote --heads");
 				// remove all carriage returns to make string consistent on all operating systems
