@@ -217,11 +217,15 @@ public class App {
 				}
 			
 		});
+
+		items.add(allFileLabel);
+		items.add(addAllFileButton);
+		items.add(restoreAllFileButton);
+		items.add(unstageAllFileButton);
+		items.add(allFilePanel);
 		
 		allFilePanel.add(allFileLabel);
 		allFilePanel.add(Box.createRigidArea(new Dimension(0, 12))); // spacing
-		//allFilePanel.add(selectFileLabel);
-		//individualFilePanel.add(fileDropdown);
 		allFilePanel.add(Box.createRigidArea(new Dimension(0, 12))); // spacing
 		allFilePanel.add(addAllFileButton);
 		allFilePanel.add(Box.createRigidArea(new Dimension(0, 12))); // spacing
@@ -399,6 +403,21 @@ public class App {
 	}
 
 	public static void main(String[] args) {
+		try {
+			for (UIManager.LookAndFeelInfo info : UIManager.getInstalledLookAndFeels()) {
+				if ("Nimbus".equals(info.getName())) {
+					UIManager.setLookAndFeel(info.getClassName());
+					break;
+				}
+			}
+		} catch (Exception e) {
+			// If Nimbus is not available, fall back to cross-platform
+			try {
+				UIManager.setLookAndFeel(UIManager.getCrossPlatformLookAndFeelClassName());
+			} catch (Exception ex) {
+				// Not worth my time
+			}
+		}
 		new App();
 	}
 
