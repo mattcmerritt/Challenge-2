@@ -217,11 +217,15 @@ public class App {
 				}
 			
 		});
+
+		items.add(allFileLabel);
+		items.add(addAllFileButton);
+		items.add(restoreAllFileButton);
+		items.add(unstageAllFileButton);
+		items.add(allFilePanel);
 		
 		allFilePanel.add(allFileLabel);
 		allFilePanel.add(Box.createRigidArea(new Dimension(0, 12))); // spacing
-		//allFilePanel.add(selectFileLabel);
-		//individualFilePanel.add(fileDropdown);
 		allFilePanel.add(Box.createRigidArea(new Dimension(0, 12))); // spacing
 		allFilePanel.add(addAllFileButton);
 		allFilePanel.add(Box.createRigidArea(new Dimension(0, 12))); // spacing
