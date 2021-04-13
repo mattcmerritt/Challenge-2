@@ -1,13 +1,22 @@
 import javax.swing.*;
 import javax.swing.text.JTextComponent;
-
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.util.ArrayList;
 import java.util.StringTokenizer;
+import javax.swing.Box;
+import javax.swing.BoxLayout;
+import javax.swing.JButton;
+import javax.swing.JFrame;
+import javax.swing.JLabel;
+import javax.swing.JPanel;
+import javax.swing.JScrollPane;
+import javax.swing.JTextArea;
+import javax.swing.JTextField;
 
 import git.tools.client.GitSubprocessClient;
+
 
 public class App {
 
@@ -152,11 +161,74 @@ public class App {
 		centerPanel.add(statusPanel);
 		// end status panel setup
 
-		// placeholder panels for center panel
-		JPanel panel1 = new JPanel();
-		panel1.setBackground(Color.blue);
+		
 
-		centerPanel.add(panel1);
+		// setting up individual file actions panel to center
+		JPanel allFilePanel = new JPanel();
+		allFilePanel.setLayout(new BoxLayout(allFilePanel, BoxLayout.Y_AXIS));
+
+		JLabel allFileLabel = new JLabel("All File Actions:");
+		//JLabel selectFileLabel = new JLabel("Select File:");
+		
+		JButton addAllFileButton = new JButton("Add all files");
+		JButton restoreAllFileButton = new JButton("Restore all files");
+		JButton unstageAllFileButton = new JButton("Unstage all files");
+		
+		allFileLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		//selectFileLabel.setAlignmentX(Component.CENTER_ALIGNMENT);
+		
+		addAllFileButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+		restoreAllFileButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+		unstageAllFileButton.setAlignmentX(Component.CENTER_ALIGNMENT);
+		
+		addAllFileButton.setMaximumSize(new Dimension(200, 25));
+		restoreAllFileButton.setMaximumSize(new Dimension(200, 25));
+		unstageAllFileButton.setMaximumSize(new Dimension(200, 25));
+		
+		
+		addAllFileButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+					
+					addAllFile();
+					updateGitStatus();
+				}
+			
+		});
+
+		restoreAllFileButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+					
+					restoreAllFile();
+					updateGitStatus();
+				}
+			
+		});
+
+		unstageAllFileButton.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent e) {
+				
+					unstageAllFile();
+					updateGitStatus();
+				}
+			
+		});
+		
+		allFilePanel.add(allFileLabel);
+		allFilePanel.add(Box.createRigidArea(new Dimension(0, 12))); // spacing
+		//allFilePanel.add(selectFileLabel);
+		//individualFilePanel.add(fileDropdown);
+		allFilePanel.add(Box.createRigidArea(new Dimension(0, 12))); // spacing
+		allFilePanel.add(addAllFileButton);
+		allFilePanel.add(Box.createRigidArea(new Dimension(0, 12))); // spacing
+		allFilePanel.add(restoreAllFileButton);
+		allFilePanel.add(Box.createRigidArea(new Dimension(0, 12))); // spacing
+		allFilePanel.add(unstageAllFileButton);
+		centerPanel.add(allFilePanel);
 
 		// setting up individual file actions panel to center
 		JPanel individualFilePanel = new JPanel();
@@ -241,6 +313,7 @@ public class App {
 
 		centerPanel.add(individualFilePanel);
 		// end individual file actions panel
+
 
 		mainPanel.add(centerPanel, BorderLayout.CENTER);
 		// end center panel setup
@@ -413,6 +486,33 @@ public class App {
 			}
 		}
 		statusText.setText(statusText.getText() + "\n"); // moves the status pane to show the left of the panel, not right
+	}
+	
+	public void addAllFile() {
+		if (gitSubprocessClient == null) {
+			showLoadFail();
+		}
+		else {
+			System.out.println(gitSubprocessClient.gitAddAll());
+		}
+	}
+	
+	public void restoreAllFile() {
+		if (gitSubprocessClient == null) {
+			showLoadFail();
+		}
+		else {
+			System.out.println(gitSubprocessClient.runGitCommand("restore ." ));
+		}
+	}
+	
+	public void unstageAllFile() {
+		if (gitSubprocessClient == null) {
+			showLoadFail();
+		}
+		else {
+			System.out.println(gitSubprocessClient.runGitCommand("reset"));
+		}
 	}
 
 	public void addIndividualFile(String filename) {
