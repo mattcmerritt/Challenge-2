@@ -497,7 +497,7 @@ public class App {
 			showLoadFail();
 		}
 		else {
-			System.out.println(gitSubprocessClient.gitAddAll());
+			outputText.setText(gitSubprocessClient.gitAddAll());
 		}
 	}
 	
@@ -506,7 +506,7 @@ public class App {
 			showLoadFail();
 		}
 		else {
-			System.out.println(gitSubprocessClient.runGitCommand("restore ." ));
+			outputText.setText(gitSubprocessClient.runGitCommand("restore ." ));
 		}
 	}
 	
@@ -515,7 +515,7 @@ public class App {
 			showLoadFail();
 		}
 		else {
-			System.out.println(gitSubprocessClient.runGitCommand("reset"));
+			outputText.setText(gitSubprocessClient.runGitCommand("reset"));
 		}
 	}
 
