@@ -135,7 +135,7 @@ public class App {
 			public void actionPerformed(ActionEvent e) {
 				
 					
-					//addAllFile(selectedFile);
+					addAllFile();
 					updateGitStatus();
 				}
 			
@@ -146,7 +146,7 @@ public class App {
 			public void actionPerformed(ActionEvent e) {
 				
 					
-					//restoreAllFile(selectedFile);
+					restoreAllFile();
 					updateGitStatus();
 				}
 			
@@ -156,7 +156,7 @@ public class App {
 			@Override
 			public void actionPerformed(ActionEvent e) {
 				
-					//unstageAllFile(selectedFile);
+					unstageAllFile();
 					updateGitStatus();
 				}
 			
@@ -220,7 +220,7 @@ public class App {
 		}
 	}
 	
-	public void unstageAllFile(String filename) {
+	public void unstageAllFile() {
 		if (gitSubprocessClient == null) {
 			showLoadFail();
 		}
