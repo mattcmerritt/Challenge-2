@@ -7,7 +7,8 @@ This is a GUI-based application deisgned to help developers who are not familiar
 ## Requirements
 
 * Java 8 or higher
-* Git Subprocess Client v0.0.9, [available on GitHub](https://github.com/CSC109/GitSubprocessClient/releases/tag/v0.0.9)
+* For Windows, Git Subprocess Client v0.0.9 or higher, [available on GitHub](https://github.com/CSC109/GitSubprocessClient/releases/tag/v0.0.9)
+* For Mac, Git Subprocess Client v0.0.12 or higher, [available on GitHub](https://github.com/CSC109/GitSubprocessClient/releases/tag/v0.0.12)
 
 ## Setup
 

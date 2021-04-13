@@ -8,4 +8,4 @@ This project was completed by Matthew Merritt, Howard Byrd, and Sadjell Mamon fo
 
 ## Documentation
 
-Further documentation is available [here](https://github.com/mattcmerritt/Challenge-2).
+Further documentation is available [here](https://mattcmerritt.github.io/Challenge-2/).
